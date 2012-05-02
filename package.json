@@ -1,17 +1,13 @@
 {
   "author": "Carlos Rodriguez <carlos@s8f.org> (http://s8f.org/)",
-  "name": "cantina-gateway",
-  "description": "Redundant entry point to Cantina apps",
-  "version": "0.0.0",
+  "name": "amino-gateway",
+  "description": "Clusterable http proxy for amino services",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/cantina/cantina-gateway.git"
+    "url": "git://github.com/cantina/amino-gateway.git"
   },
   "bin": "./bin/gateway.js",
-  "scripts": {
-    "start": "NODE_ENV=production ./bin/gateway.js",
-    "test": "NODE_ENV=test ./node_modules/.bin/mocha --reporter spec"
-  },
   "dependencies": {
     "nconf": "~0.5.1",
     "amino": "~0.1.0",
@@ -21,6 +17,9 @@
   "devDependencies": {
     "mocha": "*"
   },
+  "bugs": {
+    "url": "https://github.com/cantina/amino-gateway/issues"
+  }
   "optionalDependencies": {},
   "engines": {
     "node": ">= 0.6.0"
