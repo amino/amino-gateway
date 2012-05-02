@@ -3,8 +3,8 @@ amino-gateway
 
 Clusterable http proxy for [amino](https://github.com/cantina/amino) services
 
-Usage
------
+Idea
+----
 
   - First, use amino's `respond()` API to create an "app" service.
   - Start one or more of those servers.
@@ -12,26 +12,49 @@ Usage
   - HTTP requests to your gateway servers will pipe to your app servers,
     auto-loadbalancing between them without any further configuration. Easy!
 
+Requirements
+------------
+
+You'll need a [redis](http://redis.io) server. By default, `amino-gateway` will
+look for it at `localhost:6379`, and you'll have to override that with `--conf`
+(see below) if your redis server is elsewhere.
+
+You'll also need one or more amino processes implementing the `respond()` API
+to provide an "app" service (or a service specified by `--service`).
+See [amino](https://github.com/cantina/amino) for more information.
+
+Install
+-------
+
+```bash
+$ npm install -g amino-gateway
+```
+
+Options
+-------
+
 **Start a gateway with default settings:**
 
 ```bash
-$ ./bin/gateway.js
+$ amino-gateway
 ```
 
 **Start a gateway on port 8000:**
 
 ```bash
-$ ./bin/gateway.js -p 8000
+$ amino-gateway -p 8000
 ```
 
 **Start a gateway to proxy to "foo" service:**
 
 ```bash
-$ ./bin/gateway.js --service foo
+$ amino-gateway --service foo
 ```
 
 **Specify a conf file:**
 
+This is important if your redis server runs on a separate host. See `etc/gateway.conf` for the file's syntax.
+
 ```bash
-$ ./bin/gateway.js --conf ../path/to/my/conf.json
+$ amino-gateway --conf ../path/to/my/conf.json
 ```
