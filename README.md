@@ -15,10 +15,6 @@ Idea
 Requirements
 ------------
 
-You'll need a [redis](http://redis.io) server. By default, `amino-gateway` will
-look for it at `localhost:6379`, and you'll have to override that with `--conf`
-(see below) if your redis server is elsewhere.
-
 You'll also need one or more amino processes implementing the `respond()` API
 to provide an "app" service (or a service specified by `--service`).
 See [amino](https://github.com/cantina/amino) for more information.
@@ -30,8 +26,8 @@ Install
 $ npm install -g amino-gateway
 ```
 
-Options
--------
+Usage
+-----
 
 **Start a gateway with default settings:**
 
@@ -53,7 +49,7 @@ $ amino-gateway --service foo
 
 **Specify a conf file:**
 
-This is important if your redis server runs on a separate host. See `etc/gateway.conf` for the file's syntax.
+This is important if your redis server runs on a separate host. See `etc/gateway.json` for the file's syntax.
 
 ```bash
 $ amino-gateway --conf ../path/to/my/conf.json
