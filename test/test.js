@@ -1,7 +1,5 @@
 var assert = require('assert')
   , amino = require('amino')
-    .use(require('amino-request-http'))
-    .use(require('amino-pubsub-redis'))
   , child_process = require('child_process')
   , stream = require('stream')
   , util = require('util')
