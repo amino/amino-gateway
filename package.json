@@ -9,7 +9,7 @@
   },
   "bin": "./bin/gateway.js",
   "dependencies": {
-    "amino": "~0.2.0"
+    "amino": "~0.3.0"
   },
   "devDependencies": {
     "mocha": "*"
