@@ -1,0 +1,8 @@
+{
+  "name": "examples",
+  "private": true,
+  "version": "0.0.0",
+  "dependencies": {
+    "amino": "~0.8.0"
+  }
+}
