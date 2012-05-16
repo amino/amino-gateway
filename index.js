@@ -6,9 +6,15 @@ module.exports.createGateway = function(service, onError) {
     var sReq = amino.requestService(service);
 
     req.on('error', function(err) {
+      var res = bounce.respond();
       sReq.emit('error', err);
       if (onError) {
-        onError(err, req, bounce);
+        onError(err, req, res);
+      }
+      else {
+        res.writeHead(500, {'content-type': 'text/plain'});
+        res.write('Internal server error. Please try again later.');
+        res.end();
       }
     });
 
