@@ -9,6 +9,6 @@ var amino = require('amino')
   , gateway = require('../')
   ;
 
-gateway.createServer(amino, service).listen(port, function() {
+gateway.createGateway(service).listen(port, function() {
   console.log(service + ' gateway listening on port ' + port + '...');
 });
