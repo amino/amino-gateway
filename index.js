@@ -1,23 +1,25 @@
-var http = require('http');
+var amino = require('amino'),
+    bouncy = require('bouncy');
 
-module.exports.createServer = function(amino, service, onError) {
-  return http.createServer(function (req, res) {
-    var options = {
-      url: 'amino://' + service + req.url,
-      method: req.method,
-      headers: req.headers
-    };
-    req.pipe(amino.request(options, function(err) {
-      if (err) {
-        if (onError) {
-          onError(err, req, res);
-        }
-        else {
-          res.writeHead(500, {'content-type': 'text/plain'});
-          res.write('Internal server error. Please try again later.');
-          res.end();
-        }
+module.exports.createGateway = function(service, onError) {
+  return bouncy(function(req, bounce) {
+    var sReq = amino.requestService(service);
+
+    req.on('error', function(err) {
+      var res = bounce.respond();
+      sReq.emit('error', err);
+      if (onError) {
+        onError(err, req, res);
       }
-    })).pipe(res);
+      else {
+        res.writeHead(500, {'content-type': 'text/plain'});
+        res.write('Internal server error. Please try again later.');
+        res.end();
+      }
+    });
+
+    sReq.on('spec', function(spec) {
+      bounce(spec.host, spec.port);
+    });
   });
 };
