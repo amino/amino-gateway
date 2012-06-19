@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 
 var amino = require('amino')
-    .argv({'p': {alias: 'port'}})
+    .argv({
+      p: {alias: 'port'},
+      s: {alias: 'service'}
+    })
     .conf('/etc/amino/gateway.json')
     .conf('../etc/gateway.json', __dirname)
   , port = amino.get('port')
