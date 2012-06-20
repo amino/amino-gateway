@@ -13,6 +13,7 @@ module.exports.createGateway = function(service, onError) {
           onError(err, req, res);
         }
         else {
+          console.log(err);
           res.writeHead(500, {'content-type': 'text/plain'});
           res.write('Internal server error. Please try again later.');
           res.end();
