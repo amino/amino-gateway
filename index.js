@@ -3,6 +3,9 @@ var amino = require('amino'),
 
 module.exports.createGateway = function(service, onError) {
   return bouncy(function(req, bounce) {
+    req.on('error', function(err) {
+      console.error(err, '#error');
+    });
     var sReq = amino.requestService(service);
 
     sReq.on('spec', function(spec) {
