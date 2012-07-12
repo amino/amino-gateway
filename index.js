@@ -8,12 +8,12 @@ module.exports.createGateway = function(service, onError) {
     sReq.on('spec', function(spec) {
       bounce(spec.host, spec.port).on('error', function(err) {
         var res = bounce.respond();
+        console.error(err, '#error on ' + spec);
         sReq.emit('error', err);
         if (onError) {
           onError(err, req, res);
         }
         else {
-          console.log(err);
           res.writeHead(500, {'content-type': 'text/plain'});
           res.write('Internal server error. Please try again later.');
           res.end();
