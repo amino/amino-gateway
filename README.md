@@ -33,6 +33,13 @@ as used by your app services.
 Usage
 -----
 
+```bash
+$ amino-gateway [[--port] [--service] [--threads] [--conf]]
+```
+
+Examples
+--------
+
 **Start a gateway with default settings:**
 
 ```bash
@@ -49,6 +56,12 @@ $ amino-gateway -p 8000
 
 ```bash
 $ amino-gateway --service foo
+```
+
+**Run on specific number of threads**
+
+```bash
+$ amino-gateway --threads=8
 ```
 
 **Specify a conf file:**
