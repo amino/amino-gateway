@@ -23,7 +23,9 @@ if (cluster.isMaster) {
   }
 
   cluster.on('exit', function(worker, code, signal) {
-    console.log('worker ' + worker.pid + ' died');
+    var exitCode = worker.process.exitCode;
+    console.log('worker ' + worker.pid + ' died (' + exitCode + '). restarting...');
+    cluster.fork();
   });
 
   console.log(service + ' gateway listening (' + (threads > 1 ? threads + ' threads' : 'single thread') + ') on port ' + port + '...');
