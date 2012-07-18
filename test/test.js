@@ -35,8 +35,8 @@ describe('conf', function() {
       }
     });
     gateway = child_process.execFile('./bin/gateway.js', ['--conf', 'test/test.conf']);
-    gateway.stdout.on('data', function(chunk) {
-      assert.strictEqual(chunk.toString(), "argyle gateway listening on port 50234...\n", 'settings overridden');
+    gateway.stdout.once('data', function(chunk) {
+      assert.ok(chunk.toString().match(/^argyle gateway listening .*on port 50234\.\.\.\n$/), 'settings overridden');
       done();
     });
   });
@@ -69,19 +69,21 @@ describe('simple proxy', function() {
         });
       });
     });
-    gateway = child_process.execFile('./bin/gateway.js', ['-p', '55201']);
-    gateway.stdout.on('data', function(chunk) {
-      assert.strictEqual(chunk.toString(), "app gateway listening on port 55201...\n", 'gateway is listening');
+    gateway = child_process.execFile('./bin/gateway.js', ['-p', '55201', '-s', 'app']);
+    gateway.stdout.once('data', function(chunk) {
+      assert.ok(chunk.toString().match(/^app gateway listening .*on port 55201\.\.\.\n$/), 'settings overridden');
       done();
     });
   });
   it('should proxy basic request', function(done) {
-    amino.request('http://localhost:55201/robots.txt', function(err, response, body) {
-      assert.ifError(err);
-      assert.strictEqual(response.statusCode, 200, 'status is 200');
-      assert.strictEqual(body, "User-agent: *\nDisallow: /", 'text is OK');
-      done();
-    });
+    setTimeout(function() {
+      amino.request('http://localhost:55201/robots.txt', function(err, response, body) {
+        assert.ifError(err);
+        assert.strictEqual(response.statusCode, 200, 'status is 200');
+        assert.strictEqual(body, "User-agent: *\nDisallow: /", 'text is OK');
+        done();
+      });
+    }, 1000);
   });
   it('should stream a request', function(done) {
     var inputStream = new ValidationStream('abcd');

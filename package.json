@@ -9,11 +9,13 @@
   },
   "bin": "./bin/gateway.js",
   "dependencies": {
-    "amino": "*",
-    "bouncy": "git+https://github.com/carlos8f/bouncy.git"
+    "amino": "~0.13.0",
+    "bouncy": "git+https://github.com/carlos8f/bouncy.git",
+    "cookie": "~0.0.4"
   },
   "devDependencies": {
-    "mocha": "*"
+    "mocha": "*",
+    "idgen": "~1.0.2"
   },
   "bugs": {
     "url": "https://github.com/cantina/amino-gateway/issues"
