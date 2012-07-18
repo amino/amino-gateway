@@ -5,7 +5,8 @@ var numCPUs = require('os').cpus().length
     .argv({
       p: {alias: 'port'},
       s: {alias: 'service'},
-      t: {alias: 'threads', default: numCPUs}
+      t: {alias: 'threads', default: numCPUs},
+      v: {alias: 'version'}
     })
     .conf('/etc/amino/gateway.json')
     .conf('../etc/gateway.json', __dirname)
@@ -15,6 +16,11 @@ var numCPUs = require('os').cpus().length
   , gateway = require('../')
   , cluster = require('cluster')
   ;
+
+if (amino.get('v')) {
+  console.log(require(require('path').join(__dirname, '../package.json')).version);
+  process.exit();
+}
 
 if (cluster.isMaster) {
   // Fork workers.
