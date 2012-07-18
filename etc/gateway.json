@@ -1,9 +1,7 @@
 {
   "port": 8080,
   "service": "app",
-  "sticky": {
-    "enable": false,
-    "method": "cookie",
-    "cookie": "connect.sid"
-  }
+  "stickyEnable": false,
+  "stickyStrategy": "cookie",
+  "stickyCookie": "connect.sid"
 }

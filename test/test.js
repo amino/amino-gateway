@@ -83,7 +83,7 @@ describe('simple proxy', function() {
         assert.strictEqual(body, "User-agent: *\nDisallow: /", 'text is OK');
         done();
       });
-    }, 1000);
+    }, 500);
   });
   it('should stream a request', function(done) {
     var inputStream = new ValidationStream('abcd');

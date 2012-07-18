@@ -30,5 +30,5 @@ if (cluster.isMaster) {
 
   console.log(service + ' gateway listening (' + (threads > 1 ? threads + ' threads' : 'single thread') + ') on port ' + port + '...');
 } else {
-  gateway.createGateway(service, {sticky: amino.get('sticky')}).listen(port);
+  gateway.createGateway(service).listen(port);
 }

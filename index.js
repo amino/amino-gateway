@@ -3,10 +3,10 @@ var amino = require('amino')
   , cookie = require('cookie')
   ;
 
-module.exports.createGateway = function(service, options) {
+module.exports.createGateway = function(service) {
   var stickyStrategy;
-  if (options.sticky && options.sticky.enable) {
-    stickyStrategy = options.sticky.strategy ? options.sticky.strategy : 'cookie';
+  if (amino.get('stickyEnable')) {
+    stickyStrategy = amino.get('stickyStrategy') ? amino.get('stickyStrategy') : 'cookie';
   }
 
   return bouncy(function(req, bounce) {
@@ -16,7 +16,7 @@ module.exports.createGateway = function(service, options) {
     var clientId;
     if (stickyStrategy) {
       if (stickyStrategy === 'cookie') {
-        clientId = cookie.parse(req.headers.cookie)[options.sticky.cookie];
+        clientId = cookie.parse(req.headers.cookie)[amino.get('stickyCookie')];
       }
     }
     var sReq = amino.requestService(service, req.headers['x-amino-version'], clientId);

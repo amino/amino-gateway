@@ -14,7 +14,7 @@ describe('sticky session', function() {
         gateway.kill();
       }
     });
-    gateway = child_process.execFile('./bin/gateway.js', ['--conf', 'test/sticky.conf']);
+    gateway = child_process.execFile('./bin/gateway.js', ['--conf', 'test/sticky.conf', '--debug']);
     gateway.stdout.once('data', function(chunk) {
       assert.ok(chunk.toString().match(/^sticky-test gateway listening .*on port 58402\.\.\.\n$/), 'settings overridden');
       done();
@@ -35,11 +35,11 @@ describe('sticky session', function() {
     }
   });
   it('waits a bit', function(done) {
-    setTimeout(done, 1000);
+    setTimeout(done, 500);
   });
   it('first clientId only routes to one server', function(done) {
-    var clientId = idgen(), numRequests = 100, completed = 0, specId;
-    for (var i = 0; i < numRequests; i++) {
+    var clientId = idgen(), numRequests = 100, started = 0, completed = 0, specId;
+    process.nextTick(function nextRequest() {
       amino.request({url: 'http://localhost:58402/specId', headers: {cookie: cookie.serialize('connect.sid', clientId)}}, function(err, response, body) {
         assert.ifError(err);
         assert.strictEqual(response.statusCode, 200, 'status is 200');
@@ -52,6 +52,9 @@ describe('sticky session', function() {
           done();
         }
       });
-    }
+      if (++started < numRequests) {
+        process.nextTick(nextRequest);
+      }
+    });
   });
 });
