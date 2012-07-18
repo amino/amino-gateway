@@ -4,9 +4,12 @@ var amino = require('amino')
   ;
 
 module.exports.createGateway = function(service) {
-  var stickyStrategy;
+  var stickyStrategy, stickyCookie;
   if (amino.get('stickyEnable')) {
     stickyStrategy = amino.get('stickyStrategy') ? amino.get('stickyStrategy') : 'cookie';
+    if (stickyStrategy === 'cookie') {
+      stickyCookie = amino.get('stickyCookie');
+    }
   }
 
   return bouncy(function(req, bounce) {
@@ -15,8 +18,8 @@ module.exports.createGateway = function(service) {
     });
     var clientId;
     if (stickyStrategy) {
-      if (stickyStrategy === 'cookie') {
-        clientId = cookie.parse(req.headers.cookie)[amino.get('stickyCookie')];
+      if (stickyStrategy === 'cookie' && stickyCookie && req.headers.cookie) {
+        clientId = cookie.parse(req.headers.cookie)[stickyCookie];
       }
       else if (stickyStrategy === 'ip') {
         if (req.headers['x-forwarded-for']) {
