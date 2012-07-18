@@ -18,6 +18,15 @@ module.exports.createGateway = function(service) {
       if (stickyStrategy === 'cookie') {
         clientId = cookie.parse(req.headers.cookie)[amino.get('stickyCookie')];
       }
+      else if (stickyStrategy === 'ip') {
+        if (req.headers['x-forwarded-for']) {
+          clientId = req.headers['x-forwarded-for'].split(/\s?,\s?/)[0];
+        }
+        else {
+          clientId = req.socket.remoteAddress;
+        }
+        console.log(clientId);
+      }
     }
     var sReq = amino.requestService(service, req.headers['x-amino-version'], clientId);
 
