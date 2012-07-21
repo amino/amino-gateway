@@ -3,7 +3,7 @@ var amino = require('amino')
   , cookie = require('cookie')
   ;
 
-module.exports.createGateway = function(service) {
+module.exports.createGateway = function(service, onError) {
   var stickyStrategy, stickyCookie;
   if (amino.get('stickyEnable')) {
     stickyStrategy = amino.get('stickyStrategy') ? amino.get('stickyStrategy') : 'cookie';
@@ -38,8 +38,8 @@ module.exports.createGateway = function(service) {
         var res = bounce.respond();
         console.error(err, '#error on ' + spec);
         sReq.emit('error', err);
-        if (options.onError) {
-          options.onError(err, req, res);
+        if (onError) {
+          onError(err, req, res);
         }
         else {
           res.writeHead(500, {'content-type': 'text/plain'});
