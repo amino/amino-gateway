@@ -1,34 +1,36 @@
 var amino = require('amino')
   , bouncy = require('bouncy')
   , cookie = require('cookie')
-  ;
+  , parseUrl = require('url').parse
 
 module.exports.createGateway = function(service, onError) {
-  var stickyStrategy, stickyCookie;
-  if (amino.get('stickyEnable')) {
-    stickyStrategy = amino.get('stickyStrategy') ? amino.get('stickyStrategy') : 'cookie';
-    if (stickyStrategy === 'cookie') {
-      stickyCookie = amino.get('stickyCookie');
-    }
-  }
+  var stickyEnable = amino.get('stickyEnable')
+    , stickyCookie = amino.get('stickyCookie')
+    , stickyIP = amino.get('stickyIP')
+    , stickyQuery = amino.get('stickyQuery')
 
   return bouncy(function(req, bounce) {
     req.on('error', function(err) {
       console.error(err, '#error');
     });
-    var clientId;
-    if (stickyStrategy) {
-      if (stickyStrategy === 'cookie' && stickyCookie && req.headers.cookie) {
+    var clientId
+    if (stickyEnable) {
+      if (stickyCookie && req.headers.cookie) {
         clientId = cookie.parse(req.headers.cookie)[stickyCookie];
       }
-      else if (stickyStrategy === 'ip') {
+      else if (stickyIP) {
         if (req.headers['x-forwarded-for']) {
           clientId = req.headers['x-forwarded-for'].split(/\s?,\s?/)[0];
         }
         else {
           clientId = req.socket.remoteAddress;
         }
-        console.log(clientId);
+      }
+      else if (stickyQuery) {
+        var query = parseUrl(req.url, true).query;
+        if (query && query[stickyQuery]) {
+          clientId = query[stickyQuery];
+        }
       }
     }
     var sReq = amino.requestService(service, req.headers['x-amino-version'], clientId);
