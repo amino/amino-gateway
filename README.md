@@ -1,5 +1,5 @@
 amino-gateway
-===============
+=============
 
 Clusterable http proxy for [Amino](https://github.com/cantina/amino) services
 
@@ -77,3 +77,27 @@ use. This will override `/etc/amino.conf`.
 
 If you'd rather not pass a conf path every time, you can put a system-wide conf at
 `/etc/amino/gateway.json`.
+
+Sticky Sessions
+---------------
+
+`amino-gateway` supports
+[consistent hash](http://en.wikipedia.org/wiki/Consistent_hashing)-based sticky
+sessions.
+
+__To enable sticky sessions, first add `"stickyEnable": true` to your
+`gateway.json`.__
+
+You may use **one** of the following methods:
+
+- cookie: Add `"stickyCookie": "your_cookie_name"` to maintain sticky sessions
+  based on the value of a cookie.
+- IP: Add `"stickyIP": true` to hash sticky sessions based on the remote IP
+  address.
+- query string: Add `"stickyQuery": "your_querystring_variable_name"` to hash
+  sticky sessions based on the value of a GET variable.
+
+LICENSE
+-------
+
+MIT
