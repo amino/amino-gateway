@@ -3,6 +3,7 @@ var amino = require('amino')
   , cookie = require('cookie')
   , parseUrl = require('url').parse
   , httpProxy = require('http-proxy')
+  , Agent = require('socket-agent')
 
 module.exports.createGateway = function (service, onError) {
   var stickyEnable = amino.get('stickyEnable')
@@ -68,10 +69,13 @@ module.exports.createGateway = function (service, onError) {
     return server;
   }
   else {
+    var agent = new Agent({maxSockets: maxSockets});
     return bouncy(function (req, bounce) {
       setupRequest(req, function (spec) {
-        bounce(spec.host, spec.port).on('error', function (err) {
-          onReqError(err, req, bounce.respond(), sReq, spec);
+        agent.addRequest(spec.host, spec.port, function (socket) {
+          bounce(socket).on('error', function (err) {
+            onReqError(err, req, bounce.respond(), sReq, spec);
+          });
         });
       });
     });
