@@ -74,7 +74,7 @@ module.exports.createGateway = function (service, onError) {
       setupRequest(req, function (spec) {
         agent.addRequest(spec.host, spec.port, function (socket) {
           bounce(socket).on('error', function (err) {
-            onReqError(err, req, bounce.respond(), sReq, spec);
+            onReqError(err, req, bounce.respond(), req._sReq, spec);
           });
         });
       });
