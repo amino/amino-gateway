@@ -10,6 +10,7 @@ module.exports.createGateway = function (service, onError) {
     , stickyIP = amino.get('stickyIP')
     , stickyQuery = amino.get('stickyQuery')
     , proxyModule = amino.get('proxyModule') || 'bouncy'
+    , maxSockets = amino.get('maxSockets') || 2000
 
   function setupRequest (req, cb) {
     req.on('error', function (err) {
@@ -53,6 +54,7 @@ module.exports.createGateway = function (service, onError) {
   }
 
   if (proxyModule === 'http-proxy') {
+    httpProxy.setMaxSockets(maxSockets);
     var server = httpProxy.createServer(function (req, res, proxy) {
       setupRequest(req, function (spec) {
         req._spec = spec;
