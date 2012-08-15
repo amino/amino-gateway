@@ -43,10 +43,13 @@ module.exports.createGateway = function (service, onError) {
   }
 
   function onReqError (err, req, res, sReq, spec) {
-    console.error(err, '#error on ' + spec);
     // For certain errors, we don't want the spec to be released.
     if (['ECONNRESET', 'EADDRNOTAVAIL'].indexOf(err.code) > -1) {
       sReq.emit('error', err);
+    }
+    // Connection resets, if coming from the client, are not log-worthy.
+    if (err.code !== 'ECONNRESET') {
+      console.error(err, '#error on ' + spec + ' for ' + req.method + ' ' + req.url);
     }
     if (onError) {
       onError(err, req, res);
@@ -69,9 +72,7 @@ module.exports.createGateway = function (service, onError) {
     });
   });
   server.proxy.on('proxyError', function (err, req, res) {
-    console.log('error', err);
     onReqError(err, req, res, req._sReq, req._spec);
-    return true;
   });
   return server;
 };
