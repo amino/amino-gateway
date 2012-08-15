@@ -71,6 +71,13 @@ module.exports.createGateway = function (service, onError) {
       proxy.proxyRequest(req, res, {host: spec.host, port: spec.port, buffer: buffer});
     });
   });
+  server.on('upgrade', function(req, socket, head) {
+    var buffer = httpProxy.buffer(req);
+    setupRequest(req, function (spec) {
+      req._spec = spec;
+      server.proxy.proxyWebSocketRequest(req, socket, head, {host: spec.host, port: spec.port, buffer: buffer});
+    });
+  });
   server.proxy.on('proxyError', function (err, req, res) {
     onReqError(err, req, res, req._sReq, req._spec);
   });
