@@ -44,7 +44,10 @@ module.exports.createGateway = function (service, onError) {
 
   function onReqError (err, req, res, sReq, spec) {
     console.error(err, '#error on ' + spec);
-    sReq.emit('error', err);
+    // For certain errors, we don't want the spec to be released.
+    if (['ECONNRESET', 'EADDRNOTAVAIL'].indexOf(err.code) > -1) {
+      sReq.emit('error', err);
+    }
     if (onError) {
       onError(err, req, res);
     }
