@@ -2,7 +2,6 @@ var amino = require('amino')
   , cookie = require('cookie')
   , parseUrl = require('url').parse
   , httpProxy = require('http-proxy')
-  , Agent = require('socket-agent')
 
 module.exports.createGateway = function (service, onError) {
   var stickyEnable = amino.get('stickyEnable')
