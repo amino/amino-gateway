@@ -10,10 +10,8 @@
   "bin": "./bin/gateway.js",
   "dependencies": {
     "amino": "~0.13.0",
-    "bouncy": "git+https://github.com/carlos8f/bouncy.git",
     "cookie": "~0.0.4",
-    "http-proxy": "~0.8.2",
-    "socket-agent": "0.0.0"
+    "http-proxy": "~0.8.2"
   },
   "devDependencies": {
     "mocha": "*",

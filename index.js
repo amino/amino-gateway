@@ -1,5 +1,4 @@
 var amino = require('amino')
-  , bouncy = require('bouncy')
   , cookie = require('cookie')
   , parseUrl = require('url').parse
   , httpProxy = require('http-proxy')
@@ -10,8 +9,11 @@ module.exports.createGateway = function (service, onError) {
     , stickyCookie = amino.get('stickyCookie')
     , stickyIP = amino.get('stickyIP')
     , stickyQuery = amino.get('stickyQuery')
-    , proxyModule = amino.get('proxyModule') || 'bouncy'
-    , maxSockets = amino.get('maxSockets') || 2000
+    , maxSockets = amino.get('maxSockets')
+
+  if (maxSockets !== false && typeof maxSockets !== 'number') {
+    maxSockets = 25000;
+  }
 
   function setupRequest (req, cb) {
     req.on('error', function (err) {
@@ -54,30 +56,20 @@ module.exports.createGateway = function (service, onError) {
     }
   }
 
-  if (proxyModule === 'http-proxy') {
+  if (maxSockets) {
     httpProxy.setMaxSockets(maxSockets);
-    var server = httpProxy.createServer(function (req, res, proxy) {
-      setupRequest(req, function (spec) {
-        req._spec = spec;
-        proxy.proxyRequest(req, res, {host: spec.host, port: spec.port});
-      });
-    });
-    server.proxy.on('proxyError', function (err, req, res) {
-      onReqError(err, req, res, req._sReq, req._spec);
-      return true;
-    });
-    return server;
   }
-  else {
-    var agent = new Agent({maxSockets: maxSockets});
-    return bouncy(function (req, bounce) {
-      setupRequest(req, function (spec) {
-        agent.addRequest(spec.host, spec.port, function (socket) {
-          bounce(socket).on('error', function (err) {
-            onReqError(err, req, bounce.respond(), req._sReq, spec);
-          });
-        });
-      });
+  var server = httpProxy.createServer(function (req, res, proxy) {
+    var buffer = httpProxy.buffer(req);
+    setupRequest(req, function (spec) {
+      req._spec = spec;
+      proxy.proxyRequest(req, res, {host: spec.host, port: spec.port, buffer: buffer});
     });
-  }
+  });
+  server.proxy.on('proxyError', function (err, req, res) {
+    console.log('error', err);
+    onReqError(err, req, res, req._sReq, req._spec);
+    return true;
+  });
+  return server;
 };
