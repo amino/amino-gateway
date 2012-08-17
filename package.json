@@ -11,7 +11,8 @@
   "dependencies": {
     "amino": "~0.13.0",
     "cookie": "~0.0.4",
-    "http-proxy": "~0.8.2"
+    "http-proxy": "~0.8.2",
+    "addr": "~1.0.0"
   },
   "devDependencies": {
     "mocha": "*",

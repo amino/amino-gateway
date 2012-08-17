@@ -2,6 +2,7 @@ var amino = require('amino')
   , cookie = require('cookie')
   , parseUrl = require('url').parse
   , httpProxy = require('http-proxy')
+  , addr = require('addr')
 
 module.exports.createGateway = function (service, onError) {
   var stickyEnable = amino.get('stickyEnable')
@@ -24,12 +25,7 @@ module.exports.createGateway = function (service, onError) {
         clientId = cookie.parse(req.headers.cookie)[stickyCookie];
       }
       else if (stickyIP) {
-        if (req.headers['x-forwarded-for']) {
-          clientId = req.headers['x-forwarded-for'].split(/\s?,\s?/)[0];
-        }
-        else {
-          clientId = req.socket.remoteAddress;
-        }
+        clientId = addr(req);
       }
       else if (stickyQuery) {
         var query = parseUrl(req.url, true).query;
