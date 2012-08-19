@@ -3,6 +3,8 @@ amino-gateway
 
 Clusterable http proxy for [Amino](https://github.com/cantina/amino) services
 
+[![build status](https://secure.travis-ci.org/cantina/amino-gateway.png)](http://travis-ci.org/cantina/amino-gateway)
+
 Idea
 ----
 
