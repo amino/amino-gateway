@@ -10,8 +10,9 @@ var argv = require('optimist')
     .default('threads', require('os').cpus().length)
     .default('sockets', 25000)
     .argv
-  , amino = require('amino').init(argv)
-  , createGateway = require('../')
+  , amino = require('amino')
+    .use(require('../'), argv)
+    .init({ redis: argv.redis, request: argv.request, service: false })
   , cluster = require('cluster')
 
 if (argv.version) {
@@ -32,8 +33,9 @@ if (cluster.isMaster) {
   });
 
   console.log(argv.service + ' gateway listening (' + (argv.threads > 1 ? argv.threads + ' threads' : 'single thread') + ') on port ' + argv.port + '...');
-} else {
-  createGateway(argv)
+}
+else {
+  amino.createGateway(argv)
     .on('error', function (err) {
       console.error(err, 'server error');
     })
