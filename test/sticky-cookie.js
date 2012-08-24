@@ -1,48 +1,51 @@
-var assert = require('assert')
-  , amino = require('amino')
-  , child_process = require('child_process')
-  , util = require('util')
-  , idgen = require('idgen')
-  , cookie = require('cookie')
-  ;
+describe('sticky session (cookie-based)', function () {
+  var gateway, services, specIds = [];
 
-describe('sticky session (cookie-based)', function() {
-  var gateway, specIds = [];
-  it('can start with alternate conf file', function(done) {
-    process.on('exit', function() {
-      if (gateway) {
-        gateway.kill();
-      }
-    });
-    gateway = child_process.execFile('./bin/gateway.js', ['--conf', 'test/sticky-cookie.conf']);
-    gateway.stdout.once('data', function(chunk) {
+  before(function (done) {
+    gateway = execFile('./bin/gateway.js', ['-s', 'sticky-test-cookie', '-p', '58402', '--sticky.cookie', 'connect.sid']);
+    gateway.stdout.once('data', function (chunk) {
       assert.ok(chunk.toString().match(/^sticky-test-cookie gateway listening .*on port 58402\.\.\.\n$/), 'settings overridden');
       done();
     });
   });
-  it('can set up servers', function(done) {
-    var numServers = 3, started = 0;
-    for (var i = 0; i < numServers; i++) {
-      amino.respond('sticky-test-cookie', function(router, spec) {
-        specIds.push(spec.id);
-        router.get('/specId', function() {
-          this.res.text(spec.id);
+
+  before(function (done) {
+    var tasks = [];
+    for (var i = 0; i < 3; i++) {
+      tasks.push(function (cb) {
+        var server = createServer(function (req, res) {
+          res.writeHead(200, {'Content-Type': 'text/plain'});
+          res.end(service.spec.id);
         });
-        if (++started === numServers) {
-          done();
-        }
+        var service = amino.createService('sticky-test-cookie', server);
+        service.once('listening', function () {
+          specIds.push(service.spec.id);
+          cb(null, service);
+        });
       });
     }
+    async.parallel(tasks, function (err, results) {
+      services = results;
+      done(err);
+    });
   });
-  it('waits a bit', function(done) {
+
+  after(function (done) {
+    gateway.kill();
+    var tasks = services.map(function (service) { return service.close.bind(service); });
+    async.parallel(tasks, done);
+  });
+
+  it('waits a bit', function (done) {
     setTimeout(done, 500);
   });
-  it('only routes to one server', function(done) {
-    var clientId = idgen(), numRequests = 100, started = 0, completed = 0, specId;
-    process.nextTick(function nextRequest() {
-      amino.request({url: 'http://localhost:58402/specId', headers: {cookie: cookie.serialize('connect.sid', clientId)}}, function(err, response, body) {
+
+  it('only routes to one server', function (done) {
+    var clientId = amino.utils.idgen(), numRequests = 100, started = 0, completed = 0, specId;
+    process.nextTick(function nextRequest () {
+      amino.request({url: 'http://localhost:58402/', headers: {cookie: cookie.serialize('connect.sid', clientId)}}, function (err, res, body) {
         assert.ifError(err);
-        assert.strictEqual(response.statusCode, 200, 'status is 200');
+        assert.strictEqual(res.statusCode, 200, 'status is 200');
         assert.ok(specIds.indexOf(body) !== -1, 'spec known');
         if (specId) {
           assert.strictEqual(body, specId, 'routed to only one spec');

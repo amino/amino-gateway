@@ -1,44 +1,46 @@
 #!/usr/bin/env node
 
-var numCPUs = require('os').cpus().length
+var argv = require('optimist')
+    .alias('p', 'port')
+    .alias('s', 'service')
+    .alias('t', 'threads')
+    .alias('v', 'version')
+    .default('port', 8080)
+    .default('service', 'app')
+    .default('threads', require('os').cpus().length)
+    .default('sockets', 25000)
+    .argv
   , amino = require('amino')
-    .argv({
-      p: {alias: 'port'},
-      s: {alias: 'service'},
-      t: {alias: 'threads', default: numCPUs},
-      v: {alias: 'version'}
+    .init({
+      redis: argv.redis,
+      request: argv.request,
+      service: false
     })
-    .conf('/etc/amino/gateway.json')
-    .conf('../etc/gateway.json', __dirname)
-  , port = amino.get('port')
-  , threads = amino.get('threads')
-  , service = amino.get('service')
-  , gateway = require('../')
+  , createGateway = require('../')
   , cluster = require('cluster')
-  ;
 
-if (amino.get('v')) {
+if (argv.version) {
   console.log(require(require('path').join(__dirname, '../package.json')).version);
   process.exit();
 }
 
 if (cluster.isMaster) {
   // Fork workers.
-  for (var i = 0; i < threads; i++) {
+  for (var i = 0; i < argv.threads; i++) {
     cluster.fork();
   }
 
-  cluster.on('exit', function(worker, code, signal) {
+  cluster.on('exit', function (worker, code, signal) {
     var exitCode = worker.process.exitCode;
     console.log('worker ' + worker.pid + ' died (' + exitCode + '). restarting...');
     cluster.fork();
   });
 
-  console.log(service + ' gateway listening (' + (threads > 1 ? threads + ' threads' : 'single thread') + ') on port ' + port + '...');
+  console.log(argv.service + ' gateway listening (' + (argv.threads > 1 ? argv.threads + ' threads' : 'single thread') + ') on port ' + argv.port + '...');
 } else {
-  gateway.createGateway(service)
-    .on('error', function(err) {
-      console.error(err, 'bouncy error');
+  createGateway(argv)
+    .on('error', function (err) {
+      console.error(err, 'server error');
     })
-    .listen(port);
+    .listen(argv.port);
 }

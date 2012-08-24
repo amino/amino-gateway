@@ -1,27 +1,43 @@
 {
   "author": "Carlos Rodriguez <carlos@s8f.org> (http://s8f.org/)",
   "name": "amino-gateway",
-  "description": "Clusterable http proxy for amino services",
+  "description": "Clusterable load-balancer for Amino services",
   "version": "0.7.4",
   "repository": {
     "type": "git",
-    "url": "git://github.com/cantina/amino-gateway.git"
+    "url": "git://github.com/amino/amino-gateway.git"
   },
+  "homepage": "https://github.com/amino/amino-gateway",
+  "keywords": [
+    "load-balancing",
+    "load balancer",
+    "failover",
+    "cluster",
+    "scalability",
+    "performance",
+    "service",
+    "pub/sub",
+    "high-availability",
+    "cloud",
+    "redundancy",
+    "ipc"
+  ],
   "bin": "./bin/gateway.js",
   "dependencies": {
-    "amino": "~0.13.0",
+    "amino": "~1.0.2",
     "cookie": "~0.0.4",
     "http-proxy": "~0.8.2",
-    "addr": "~1.0.0"
+    "addr": "~1.0.0",
+    "optimist": "~0.3.4",
+    "amino-spec": "0.0.1"
   },
   "devDependencies": {
     "mocha": "*",
-    "idgen": "~1.0.2"
+    "async": "~0.1.22"
   },
   "bugs": {
-    "url": "https://github.com/cantina/amino-gateway/issues"
+    "url": "https://github.com/amino/amino-gateway/issues"
   },
-  "optionalDependencies": {},
   "license": "MIT",
   "engines": {
     "node": ">= 0.6.0"

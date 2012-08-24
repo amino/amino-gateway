@@ -1,26 +1,18 @@
 amino-gateway
 =============
 
-Clusterable http proxy for [Amino](https://github.com/cantina/amino) services
+Clusterable load-balancer for [Amino](https://github.com/amino/amino) services
 
-[![build status](https://secure.travis-ci.org/cantina/amino-gateway.png)](http://travis-ci.org/cantina/amino-gateway)
+[![build status](https://secure.travis-ci.org/amino/amino-gateway.png)](http://travis-ci.org/amino/amino-gateway)
 
-Idea
-----
+Features
+--------
 
-  - First, use Amino's `respond()` API to create an "app" service.
-  - Start one or more of those servers.
-  - Start one or more `amino-gateway` servers.
-  - HTTP requests to your gateway servers will pipe to your app servers,
-    auto-loadbalancing between them without any further configuration. Easy!
-
-Requirements
-------------
-
-You'll also need one or more Amino processes implementing the `respond()` API
-to provide an "app" service (or a service specified by `--service`).
-
-See [Amino](https://github.com/cantina/amino) for more information.
+- Round-robin load-balancer for an [Amino](https://github.com/amino/amino) service.
+- Backend servers added/removed to the rotation automatically
+- Sticky sessions via cookie, IP, GET variable, or header
+- Supports websockets, streaming
+- Multi-threaded, high performance
 
 Install
 -------
@@ -29,77 +21,59 @@ Install
 $ npm install -g amino-gateway
 ```
 
-Also make sure you have an `/etc/amino.conf` set up which has the same drivers/options
-as used by your app services.
-
 Usage
 -----
 
 ```bash
-$ amino-gateway [[--port] [--service] [--threads] [--conf]]
+$ amino-gateway [OPTIONS]
 ```
 
-Examples
---------
-
-**Start a gateway with default settings:**
-
-```bash
-$ amino-gateway
-```
-
-**Start a gateway on port 8000:**
-
-```bash
-$ amino-gateway -p 8000
-```
-
-**Start a gateway to proxy to "foo" service:**
-
-```bash
-$ amino-gateway --service foo
-```
-
-**Run on specific number of threads**
-
-```bash
-$ amino-gateway --threads=8
-```
-
-**Specify a conf file:**
-
-See `etc/gateway.json` for the file's syntax.
-
-```bash
-$ amino-gateway --conf ../path/to/my/conf.json
-```
-
-The conf file can also have an "amino" key, corresponding to the Amino configuration to
-use. This will override `/etc/amino.conf`.
-
-If you'd rather not pass a conf path every time, you can put a system-wide conf at
-`/etc/amino/gateway.json`.
-
-Sticky Sessions
----------------
-
-`amino-gateway` supports
-[consistent hash](http://en.wikipedia.org/wiki/Consistent_hashing)-based sticky
-sessions.
-
-__To enable sticky sessions, first add `"stickyEnable": true` to your
-`gateway.json`.__
-
-You may use **one** of the following methods:
-
-- cookie: Add `"stickyCookie": "your_cookie_name"` to maintain sticky sessions
-  based on the value of a cookie.
-- IP: Add `"stickyIP": true` to hash sticky sessions based on the remote IP
-  address.
-- query string: Add `"stickyQuery": "your_querystring_variable_name"` to hash
-  sticky sessions based on the value of a GET variable.
-
-LICENSE
+Options
 -------
 
-MIT
+- `--service` (`-s`): Name of the service to . Optionally, you can add `@version` to
+  limit to a specific [semver](http://semver.org/) range. (Default: `app`)
+- `--threads` (`-t`): Number of threads to use. (Default: number of CPU cores)
+- `--version` (`-v`): Display the version and exit.
+- `--port` (`-p`): Port to listen on. (Default: `8080`)
+- `--redis=host:port`: Specify host and port of Amino's redis server(s). Use
+  multiple `--redis` args for multiple servers. (Default: `localhost:6379`)
+- `--sockets`: Max number of sockets to simultaneously open with backends.
+  (Default: `25000`)
+- `--sticky.ip`: Enable sticky sessions based on remote IP address.
+- `--sticky.cookie`: Specify the name of a cookie to be used for sticky sessions.
+- `--sticky.query`: Specify a GET variable to be used for sticky sessions.
+
+---
+
+Developed by [Terra Eclipse](http://www.terraeclipse.com)
+---------------------------------------------------------
+
+Terra Eclipse, Inc. is a nationally recognized political technology and
+strategy firm located in Aptos, CA and Washington, D.C.
+
+[http://www.terraeclipse.com](http://www.terraeclipse.com)
+
+License: MIT
+------------
+
+- Copyright (C) 2012 Carlos Rodriguez (http://s8f.org/)
+- Copyright (C) 2012 Terra Eclipse, Inc. (http://www.terraeclipse.com/)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is furnished
+to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
