@@ -10,12 +10,7 @@ var argv = require('optimist')
     .default('threads', require('os').cpus().length)
     .default('sockets', 25000)
     .argv
-  , amino = require('amino')
-    .init({
-      redis: argv.redis,
-      request: argv.request,
-      service: false
-    })
+  , amino = require('amino').init(argv)
   , createGateway = require('../')
   , cluster = require('cluster')
 
