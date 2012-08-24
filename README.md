@@ -31,13 +31,14 @@ $ amino-gateway [OPTIONS]
 Options
 -------
 
-- `--service` (`-s`): Name of the service to . Optionally, you can add `@version` to
-  limit to a specific [semver](http://semver.org/) range. (Default: `app`)
+- `--service` (`-s`): Name of the Amino service. Optionally, you can add
+  `@version` to limit to a specific [semver](http://semver.org/) range.
+  (Default: `app`)
 - `--threads` (`-t`): Number of threads to use. (Default: number of CPU cores)
 - `--version` (`-v`): Display the version and exit.
 - `--port` (`-p`): Port to listen on. (Default: `8080`)
-- `--redis=host:port`: Specify host and port of Amino's redis server(s). Use
-  multiple `--redis` args for multiple servers. (Default: `localhost:6379`)
+- `--redis=host:port` (`-r`): Specify host and port of Amino's redis server(s).
+  Use multiple `--redis` args for multiple servers. (Default: `localhost:6379`)
 - `--sockets`: Max number of sockets to simultaneously open with backends.
   (Default: `25000`)
 - `--sticky.ip`: Enable sticky sessions based on remote IP address.
