@@ -37,7 +37,7 @@ exports.attach = function (options) {
 
     function onReqError (err, req, res, sReq, spec) {
       // For certain errors, we don't want the spec to be released.
-      if (['ECONNRESET', 'EADDRNOTAVAIL'].indexOf(err.code) > -1) {
+      if (['ECONNRESET', 'EADDRNOTAVAIL'].indexOf(err.code) === -1) {
         sReq.emit('error', err);
       }
       // Connection resets, if coming from the client, are not log-worthy.
