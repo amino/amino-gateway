@@ -7,6 +7,9 @@ describe('simple proxy', function () {
       assert.ok(chunk.toString().match(/^argyle@0.1.x gateway listening .*on port 50234\.\.\.\n$/), 'settings overridden');
       done();
     });
+    process.once('exit', function () {
+      gateway.kill();
+    });
   });
 
   before(function (done) {
@@ -25,7 +28,6 @@ describe('simple proxy', function () {
   });
 
   after(function (done) {
-    gateway.kill();
     service.close(done);
   });
 
