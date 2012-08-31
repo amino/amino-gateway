@@ -24,26 +24,24 @@ $ npm install -g amino-gateway
 Usage
 -----
 
-```bash
-$ amino-gateway [OPTIONS]
 ```
 
-Options
--------
+  Usage: amino-gateway [options]
 
-- `--service` (`-s`): Name of the Amino service. Optionally, you can add
-  `@version` to limit to a specific [semver](http://semver.org/) range.
-  (Default: `app`)
-- `--threads` (`-t`): Number of threads to use. (Default: number of CPU cores)
-- `--version` (`-v`): Display the version and exit.
-- `--port` (`-p`): Port to listen on. (Default: `8080`)
-- `--redis=host:port` (`-r`): Specify host and port of Amino's redis server(s).
-  Use multiple `--redis` args for multiple servers. (Default: `localhost:6379`)
-- `--sockets`: Max number of sockets to simultaneously open with backends.
-  (Default: `25000`)
-- `--sticky.ip`: Enable sticky sessions based on remote IP address.
-- `--sticky.cookie`: Specify the name of a cookie to be used for sticky sessions.
-- `--sticky.query`: Specify a GET variable to be used for sticky sessions.
+  Options:
+
+    -h, --help                              output usage information
+    -V, --version                           output the version number
+    -p, --port <port>                       port to listen on (default: 8080)
+    -s, --service <name[@version]>          amino service to proxy to, with optional semver (default: app)
+    -t, --threads <num>                     number of threads to use (default: CPU count)
+    -r, --redis <port/host/host:port/list>  redis server(s) used by amino service (can be comma-separated)
+    --sockets <num>                         number of concurrent sockets to allow (default: 25000)
+    --stickyQuery <name>                    name of a GET variable to base sticky sessions on
+    --stickyIp                              enable sticky sessions based on remote IP address
+    --stickyCookie <cookie name>            name of a cookie to base sticky sessions on
+
+```
 
 ---
 
