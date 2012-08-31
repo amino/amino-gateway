@@ -43,6 +43,7 @@ if (cluster.isMaster) {
   console.log(program.service + ' gateway listening (' + (program.threads > 1 ? program.threads + ' threads' : 'single thread') + ') on port ' + program.port + '...');
 }
 else {
+  process.title = 'amino-gateway (worker)';
   amino.createGateway(program)
     .on('error', function (err) {
       console.error(err, 'server error');
