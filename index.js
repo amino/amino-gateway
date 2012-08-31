@@ -16,16 +16,16 @@ exports.attach = function (options) {
         console.error(err, '#error');
       });
       var stickyId;
-      if (opts.sticky) {
-        if (opts.sticky.cookie && req.headers.cookie) {
-          stickyId = cookie.parse(req.headers.cookie)[opts.sticky.cookie];
+      if (opts.stickyCookie || opts.stickyIp || opts.stickyQuery) {
+        if (opts.stickyCookie && req.headers.cookie) {
+          stickyId = cookie.parse(req.headers.cookie)[opts.stickyCookie];
         }
-        else if (opts.sticky.ip) {
+        else if (opts.stickyIp) {
           stickyId = addr(req);
         }
-        else if (opts.sticky.query) {
+        else if (opts.stickyQuery) {
           var query = parseUrl(req.url, true).query;
-          stickyId = query[opts.sticky.query];
+          stickyId = query[opts.stickyQuery];
         }
       }
       req._sReq = amino.requestService({

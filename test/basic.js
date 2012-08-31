@@ -2,7 +2,7 @@ describe('simple proxy', function () {
   var gateway, service;
 
   before(function (done) {
-    gateway = execFile('./bin/gateway.js', ['-s', 'argyle@0.1.x', '-p', '50234']);
+    gateway = execFile('./bin/amino-gateway', ['-s', 'argyle@0.1.x', '-p', '50234']);
     gateway.stdout.once('data', function (chunk) {
       assert.ok(chunk.toString().match(/^argyle@0.1.x gateway listening .*on port 50234\.\.\.\n$/), 'settings overridden');
       done();

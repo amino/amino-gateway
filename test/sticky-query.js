@@ -2,7 +2,7 @@ describe('sticky session (query-based)', function () {
   var gateway, services, specIds = [];
 
   before(function (done) {
-    gateway = execFile('./bin/gateway.js', ['-s', 'sticky-test-query', '-p', '20523', '--sticky.query', 'sid']);
+    gateway = execFile('./bin/amino-gateway', ['-s', 'sticky-test-query', '-p', '20523', '--stickyQuery', 'sid']);
     gateway.stdout.once('data', function (chunk) {
       assert.ok(chunk.toString().match(/^sticky-test-query gateway listening .*on port 20523\.\.\.\n$/), 'settings overridden');
       done();

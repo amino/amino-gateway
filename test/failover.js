@@ -2,7 +2,7 @@ describe('failover', function () {
   var gateway, services;
 
   before(function (done) {
-    gateway = execFile('./bin/gateway.js', ['-s', 'failover@0.1.x', '-p', '50235', '-t', '1']);
+    gateway = execFile('./bin/amino-gateway', ['-s', 'failover@0.1.x', '-p', '50235', '-t', '1']);
     process.once('exit', function () {
       gateway.kill();
     });

@@ -2,7 +2,7 @@ describe('sticky session (cookie-based)', function () {
   var gateway, services, specIds = [];
 
   before(function (done) {
-    gateway = execFile('./bin/gateway.js', ['-s', 'sticky-test-cookie', '-p', '58402', '--sticky.cookie', 'connect.sid']);
+    gateway = execFile('./bin/amino-gateway', ['-s', 'sticky-test-cookie', '-p', '58402', '--stickyCookie', 'connect.sid']);
     gateway.stdout.once('data', function (chunk) {
       assert.ok(chunk.toString().match(/^sticky-test-cookie gateway listening .*on port 58402\.\.\.\n$/), 'settings overridden');
       done();

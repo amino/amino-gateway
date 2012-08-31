@@ -22,13 +22,13 @@
     "redundancy",
     "ipc"
   ],
-  "bin": "./bin/gateway.js",
+  "bin": "./bin/amino-gateway",
   "dependencies": {
     "amino": "~1.1.2",
     "cookie": "~0.0.4",
     "http-proxy": "~0.8.2",
     "addr": "~1.0.0",
-    "optimist": "~0.3.4"
+    "commander": "~1.0.3"
   },
   "devDependencies": {
     "mocha": "*",

@@ -2,7 +2,7 @@ describe('sticky session (ip-based)', function () {
   var gateway, services, specIds = [];
 
   before(function (done) {
-    gateway = execFile('./bin/gateway.js', ['-s', 'sticky-test-ip', '-p', '58403', '--sticky.ip']);
+    gateway = execFile('./bin/amino-gateway', ['-s', 'sticky-test-ip', '-p', '58403', '--stickyIp']);
     gateway.stdout.once('data', function (chunk) {
       assert.ok(chunk.toString().match(/^sticky-test-ip gateway listening .*on port 58403\.\.\.\n$/), 'settings overridden');
       done();

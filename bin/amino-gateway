@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+
+function list (str) {
+  return str.split(/ *, */).map(function (val) {
+    return val.match(/^\d+$/) ? parseInt(val, 10) : val;
+  });
+}
+
+process.title = 'amino-gateway';
+
+var program = require('commander')
+  .version(require(require('path').join(__dirname, '../package.json')).version)
+  .option('-p, --port <port>', 'port to listen on (default: 8080)', Number, 8080)
+  .option('-s, --service <name[@version]>', 'amino service to proxy to, with optional semver (default: app)', 'app')
+  .option('-t, --threads <num>', 'number of threads to use (default: CPU count)', Number, require('os').cpus().length)
+  .option('-r, --redis <port/host/host:port/list>', 'redis server(s) used by amino service (can be comma-separated)', list)
+  .option('--sockets <num>', 'number of concurrent sockets to allow (default: 25000)', Number, 25000)
+  .option('--stickyQuery <name>', 'name of a GET variable to base sticky sessions on')
+  .option('--stickyIp', 'enable sticky sessions based on remote IP address')
+  .option('--stickyCookie <cookie name>', 'name of a cookie to base sticky sessions on')
+  .parse(process.argv)
+
+var amino = require('amino')
+    .use(require('../'), program)
+    .init({
+      redis: program.redis,
+      service: false
+    })
+  , cluster = require('cluster')
+
+if (cluster.isMaster) {
+  // Fork workers.
+  for (var i = 0; i < program.threads; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', function (worker, code, signal) {
+    var exitCode = worker.process.exitCode;
+    console.log('worker ' + worker.pid + ' died (' + exitCode + '). restarting...');
+    cluster.fork();
+  });
+
+  console.log(program.service + ' gateway listening (' + (program.threads > 1 ? program.threads + ' threads' : 'single thread') + ') on port ' + program.port + '...');
+}
+else {
+  amino.createGateway(program)
+    .on('error', function (err) {
+      console.error(err, 'server error');
+    })
+    .listen(program.port);
+}
