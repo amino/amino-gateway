@@ -2,7 +2,6 @@ var cookie = require('cookie')
   , parseUrl = require('url').parse
   , httpProxy = require('http-proxy')
   , addr = require('addr')
-  , Spec = require('amino-spec')
 
 exports.attach = function (options) {
   options || (options = {});
