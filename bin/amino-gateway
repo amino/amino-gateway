@@ -18,6 +18,8 @@ var program = require('commander')
   .option('--stickyQuery <name>', 'name of a GET variable to base sticky sessions on')
   .option('--stickyIp', 'enable sticky sessions based on remote IP address')
   .option('--stickyCookie <cookie name>', 'name of a cookie to base sticky sessions on')
+  .option('--setuid <uid|username>', '(POSIX, requires root) run under this uid (or username)')
+  .option('--setgid <gid|groupname>', '(POSIX, requires root) run under this gid (or groupname)')
   .parse(process.argv)
 
 var amino = require('amino')
@@ -44,9 +46,17 @@ if (cluster.isMaster) {
 }
 else {
   process.title = 'amino-gateway (worker)';
-  amino.createGateway(program)
-    .on('error', function (err) {
-      console.error(err, 'server error');
-    })
-    .listen(program.port);
+  var server = amino.createGateway(program);
+  server.on('error', function (err) {
+    console.error(err, 'server error');
+  });
+  server.on('listening', function () {
+    if (program.setuid) {
+      process.setuid(program.setuid);
+    }
+    if (program.setgid) {
+      process.setgid(program.setgid);
+    }
+  });
+  server.listen(program.port);
 }
