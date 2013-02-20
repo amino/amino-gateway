@@ -2,7 +2,7 @@
   "author": "Carlos Rodriguez <carlos@s8f.org> (http://s8f.org/)",
   "name": "amino-gateway",
   "description": "Clusterable load-balancer for Amino services",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "repository": {
     "type": "git",
     "url": "git://github.com/amino/amino-gateway.git"
