@@ -51,11 +51,11 @@ else {
     console.error(err, 'server error');
   });
   server.on('listening', function () {
-    if (program.setuid) {
-      process.setuid(program.setuid);
-    }
     if (program.setgid) {
       process.setgid(program.setgid);
+    }
+    if (program.setuid) {
+      process.setuid(program.setuid);
     }
   });
   server.listen(program.port);
