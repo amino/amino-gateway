@@ -24,7 +24,7 @@
   ],
   "bin": "./bin/amino-gateway",
   "dependencies": {
-    "amino": "~1.1.2",
+    "amino": "~1.1.4",
     "cookie": "~0.0.4",
     "http-proxy": "~0.8.2",
     "addr": "~1.0.0",
