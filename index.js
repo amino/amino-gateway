@@ -58,12 +58,29 @@ exports.attach = function (options) {
       httpProxy.setMaxSockets(opts.sockets);
     }
 
+    if (options.maintPage) {
+      var maintPage = require('dish').file(options.maintPage);
+    }
+
     var server = httpProxy.createServer(function (req, res, proxy) {
-      var buffer = httpProxy.buffer(req);
-      setupRequest(req, function (spec) {
-        req._spec = spec;
-        proxy.proxyRequest(req, res, {host: spec.host, port: spec.port, buffer: buffer});
-      });
+      if (options.maintMode) {
+        var remoteIp = addr(req);
+        if (options.maintIps && ~options.maintIps.indexOf(remoteIp)) doProxy();
+        else {
+          maintPage(req, res, 500);
+        }
+      }
+      else {
+        doProxy();
+      }
+
+      function doProxy () {
+        var buffer = httpProxy.buffer(req);
+        setupRequest(req, function (spec) {
+          req._spec = spec;
+          proxy.proxyRequest(req, res, {host: spec.host, port: spec.port, buffer: buffer});
+        });
+      }
     });
 
     server.on('upgrade', function (req, socket, head) {

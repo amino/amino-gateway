@@ -20,6 +20,9 @@ var program = require('commander')
   .option('--stickyCookie <cookie name>', 'name of a cookie to base sticky sessions on')
   .option('--setuid <uid|username>', '(POSIX, requires root) run under this uid (or username)')
   .option('--setgid <gid|groupname>', '(POSIX, requires root) run under this gid (or groupname)')
+  .option('--maintMode', 'start in maintenance mode. (alternatively send SIGUSR2 to toggle maintenance mode)')
+  .option('--maintPage <path>', 'path to an html file to be served when maintenance mode is enabled')
+  .option('--maintIps <ips>', 'comma-separated list of IP addresses able to bypass maintenance mode', list)
   .parse(process.argv)
 
 var amino = require('amino')
@@ -43,8 +46,24 @@ if (cluster.isMaster) {
   });
 
   console.log(program.service + ' gateway listening (' + (program.threads > 1 ? program.threads + ' threads' : 'single thread') + ') on port ' + program.port + '...');
+
+  process.on('SIGUSR2', function () {
+    program.maintMode = !program.maintMode;
+    for (var id in cluster.workers) {
+      cluster.workers[id].process.kill('SIGUSR2');
+    }
+    console.log('Maintenance mode', program.maintMode ? 'on' : 'off');
+  });
+
+  if (program.maintMode) {
+    console.log('Maintenance mode on');
+  }
 }
 else {
+  process.on('SIGUSR2', function () {
+    program.maintMode = !program.maintMode;
+  });
+
   process.title = 'amino-gateway (worker)';
   var server = amino.createGateway(program);
   server.on('error', function (err) {
