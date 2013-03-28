@@ -41,7 +41,7 @@ if (cluster.isMaster) {
 
   cluster.on('exit', function (worker, code, signal) {
     var exitCode = worker.process.exitCode;
-    console.log('worker ' + worker.pid + ' died (' + exitCode + '). restarting...');
+    console.error('worker ' + worker.process.pid + ' died (' + exitCode + '). restarting...');
     cluster.fork();
   });
 
@@ -52,11 +52,11 @@ if (cluster.isMaster) {
     for (var id in cluster.workers) {
       cluster.workers[id].process.kill('SIGUSR2');
     }
-    console.log('Maintenance mode', program.maintMode ? 'on' : 'off');
+    console.error('Maintenance mode', program.maintMode ? 'on' : 'off');
   });
 
   if (program.maintMode) {
-    console.log('Maintenance mode on');
+    console.error('Maintenance mode on');
   }
 }
 else {

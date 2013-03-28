@@ -10,6 +10,7 @@ describe('failover', function () {
       assert.ok(chunk.toString().match(/listening/));
       done();
     });
+    gateway.stderr.pipe(process.stderr);
   });
 
   before(function (done) {
