@@ -13,6 +13,7 @@ Features
 - Sticky sessions via cookie, IP, GET variable, or header
 - Supports websockets, streaming
 - Multi-threaded, high performance
+- Maintenance mode with posix signal toggle (SIGUSR2)
 
 Install
 -------
@@ -40,6 +41,11 @@ Usage
     --stickyQuery <name>                    name of a GET variable to base sticky sessions on
     --stickyIp                              enable sticky sessions based on remote IP address
     --stickyCookie <cookie name>            name of a cookie to base sticky sessions on
+    --setuid <uid|username>                 (POSIX, requires root) run under this uid (or username)
+    --setgid <gid|groupname>                (POSIX, requires root) run under this gid (or groupname)
+    --maintMode                             start in maintenance mode. (alternatively send SIGUSR2 to toggle maintenance mode)
+    --maintPage <path>                      path to an html file to be served when maintenance mode is enabled
+    --maintIps <ips>                        comma-separated list of IP addresses able to bypass maintenance mode
 
 ```
 
