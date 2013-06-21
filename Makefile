@@ -1,5 +1,5 @@
 test:
-	@./node_modules/.bin/mocha \
+	@NODE_ENV=test ./node_modules/.bin/mocha \
 		--reporter spec \
 		--require test/common.js \
 		--bail
