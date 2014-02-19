@@ -37,7 +37,6 @@ Usage
     -s, --service <name[@version]>          amino service to proxy to, with optional semver (default: app)
     -t, --threads <num>                     number of threads to use (default: CPU count)
     -r, --redis <port/host/host:port/list>  redis server(s) used by amino service (can be comma-separated)
-    --sockets <num>                         number of concurrent sockets to allow (default: 25000)
     --stickyQuery <name>                    name of a GET variable to base sticky sessions on
     --stickyIp                              enable sticky sessions based on remote IP address
     --stickyCookie <cookie name>            name of a cookie to base sticky sessions on

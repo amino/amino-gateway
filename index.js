@@ -1,5 +1,6 @@
 var cookie = require('cookie')
   , parseUrl = require('url').parse
+  , http = require('http')
   , httpProxy = require('http-proxy')
   , addr = require('addr')
   , cluster = require('cluster')
@@ -85,15 +86,18 @@ exports.attach = function (options) {
       }
     }
 
-    if (opts.sockets) {
-      httpProxy.setMaxSockets(opts.sockets);
-    }
+    // No longer supported by http-proxy -- problem?
+    // if (opts.sockets) {
+    //   httpProxy.setMaxSockets(opts.sockets);
+    // }
 
     if (options.maintPage) {
       var maintPage = require('dish').file(options.maintPage);
     }
 
-    var server = httpProxy.createServer(function (req, res, proxy) {
+    var proxy = httpProxy.createProxyServer();
+
+    var server = http.createServer(function (req, res) {
       if (options.maintMode) {
         var remoteIp = addr(req);
         if (options.maintIps && ~options.maintIps.indexOf(remoteIp)) doProxy();
@@ -106,27 +110,25 @@ exports.attach = function (options) {
       }
 
       function doProxy () {
-        var buffer = httpProxy.buffer(req);
         setupRequest(req, function (spec) {
           req._spec = spec;
           d.run(function () {
-            proxy.proxyRequest(req, res, {host: spec.host, port: spec.port, buffer: buffer});
+            proxy.web(req, res, { target: spec });
           });
         });
       }
     });
 
     server.on('upgrade', function (req, socket, head) {
-      var buffer = httpProxy.buffer(req);
       setupRequest(req, function (spec) {
         req._spec = spec;
         d.run(function () {
-          server.proxy.proxyWebSocketRequest(req, socket, head, {host: spec.host, port: spec.port, buffer: buffer});
+          proxy.ws(req, socket, head, { target: spec });
         });
       });
     });
 
-    server.proxy.on('proxyError', function (err, req, res) {
+    proxy.on('error', function (err, req, res) {
       onReqError(err, req, res, req._sReq, req._spec);
     });
 
