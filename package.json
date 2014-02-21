@@ -26,7 +26,7 @@
   "dependencies": {
     "amino": "~1.1.4",
     "cookie": "~0.0.4",
-    "http-proxy": "~0.8.2",
+    "http-proxy": "~1.0.2",
     "addr": "~1.0.0",
     "commander": "~1.0.3",
     "dish": "~0.1.0"
