@@ -102,7 +102,7 @@ exports.attach = function (options) {
         var remoteIp = addr(req);
         if (options.maintIps && ~options.maintIps.indexOf(remoteIp)) doProxy();
         else {
-          maintPage(req, res, 500);
+          maintPage(req, res, 503);
         }
       }
       else {
