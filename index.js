@@ -9,37 +9,37 @@ exports.attach = function (options) {
   options || (options = {});
   var amino = this;
 
-  var d = require('domain').create();
-  d.on('error', function (err) {
-    console.error('uncaught error!', err.stack || err);
-
-    try {
-      // make sure we close down within 30 seconds
-      var killtimer = setTimeout(function() {
-        process.exit(1);
-      }, 30000);
-      // But don't keep the process open just for that!
-      killtimer.unref();
-
-      // stop taking new requests.
-      server.close();
-
-      // Let the master know we're dead.  This will trigger a
-      // 'disconnect' in the cluster master, and then it will fork
-      // a new worker.
-      cluster.worker.disconnect();
-
-      // try to send an error to the request that triggered the problem
-      res.writeHead(500, {'content-type': 'text/plain'});
-      res.write('Internal server error. Please try again later.');
-      res.end();
-    } catch (err2) {
-      // oh well, not much we can do at this point.
-      console.error('Error sending 500!', err2.stack || err2);
-    }
-  });
-
   amino.createGateway = function (opts) {
+
+    var d = require('domain').create();
+    d.on('error', function (err) {
+      console.error('uncaught error!', err.stack || err);
+
+      try {
+        // make sure we close down within 30 seconds
+        var killtimer = setTimeout(function() {
+          process.exit(1);
+        }, 30000);
+        // But don't keep the process open just for that!
+        killtimer.unref();
+        // stop taking new requests.
+        server.close();
+
+        // Let the master know we're dead.  This will trigger a
+        // 'disconnect' in the cluster master, and then it will fork
+        // a new worker.
+        cluster.worker.disconnect();
+
+        // try to send an error to the request that triggered the problem
+        res.writeHead(500, {'content-type': 'text/plain'});
+        res.write('Internal server error. Please try again later.');
+        res.end();
+      } catch (err2) {
+        // oh well, not much we can do at this point.
+        console.error('Error sending 500!', err2.stack || err2);
+      }
+    });
+
     opts = amino.utils.copy(opts);
     var serviceSpec = new amino.Spec(opts.service);
 
