@@ -29,14 +29,9 @@ exports.attach = function (options) {
         // 'disconnect' in the cluster master, and then it will fork
         // a new worker.
         cluster.worker.disconnect();
-
-        // try to send an error to the request that triggered the problem
-        res.writeHead(500, {'content-type': 'text/plain'});
-        res.write('Internal server error. Please try again later.');
-        res.end();
       } catch (err2) {
         // oh well, not much we can do at this point.
-        console.error('Error sending 500!', err2.stack || err2);
+        console.error('Error closing server', err2.stack || err2);
       }
     });
 
