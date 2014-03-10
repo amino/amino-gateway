@@ -86,11 +86,6 @@ exports.attach = function (options) {
       }
     }
 
-    // No longer supported by http-proxy -- problem?
-    // if (opts.sockets) {
-    //   httpProxy.setMaxSockets(opts.sockets);
-    // }
-
     if (options.maintPage) {
       var maintPage = require('dish').file(options.maintPage);
     }
