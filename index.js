@@ -9,37 +9,32 @@ exports.attach = function (options) {
   options || (options = {});
   var amino = this;
 
-  var d = require('domain').create();
-  d.on('error', function (err) {
-    console.error('uncaught error!', err.stack || err);
-
-    try {
-      // make sure we close down within 30 seconds
-      var killtimer = setTimeout(function() {
-        process.exit(1);
-      }, 30000);
-      // But don't keep the process open just for that!
-      killtimer.unref();
-
-      // stop taking new requests.
-      server.close();
-
-      // Let the master know we're dead.  This will trigger a
-      // 'disconnect' in the cluster master, and then it will fork
-      // a new worker.
-      cluster.worker.disconnect();
-
-      // try to send an error to the request that triggered the problem
-      res.writeHead(500, {'content-type': 'text/plain'});
-      res.write('Internal server error. Please try again later.');
-      res.end();
-    } catch (err2) {
-      // oh well, not much we can do at this point.
-      console.error('Error sending 500!', err2.stack || err2);
-    }
-  });
-
   amino.createGateway = function (opts) {
+
+    var d = require('domain').create();
+    d.on('error', function (err) {
+      console.error('uncaught error!', err.stack || err);
+
+      try {
+        // make sure we close down within 30 seconds
+        var killtimer = setTimeout(function() {
+          process.exit(1);
+        }, 30000);
+        // But don't keep the process open just for that!
+        killtimer.unref();
+        // stop taking new requests.
+        server.close();
+
+        // Let the master know we're dead.  This will trigger a
+        // 'disconnect' in the cluster master, and then it will fork
+        // a new worker.
+        cluster.worker.disconnect();
+      } catch (err2) {
+        // oh well, not much we can do at this point.
+        console.error('Error closing server', err2.stack || err2);
+      }
+    });
+
     opts = amino.utils.copy(opts);
     var serviceSpec = new amino.Spec(opts.service);
 
@@ -79,7 +74,8 @@ exports.attach = function (options) {
       if (opts.onError) {
         opts.onError(err, req, res);
       }
-      else {
+      // WebSockets have no res
+      else if (res && !res.headersSent) {
         res.writeHead(500, {'content-type': 'text/plain'});
         res.write('Internal server error. Please try again later.');
         res.end();
@@ -108,7 +104,9 @@ exports.attach = function (options) {
         setupRequest(req, function (spec) {
           req._spec = spec;
           d.run(function () {
-            proxy.web(req, res, { target: spec });
+            proxy.web(req, res, { target: spec }, function httpErrorHandler (err, req, res) {
+              onReqError(err, req, res, req._sReq, req._spec);
+            });
           });
         });
       }
@@ -118,13 +116,12 @@ exports.attach = function (options) {
       setupRequest(req, function (spec) {
         req._spec = spec;
         d.run(function () {
-          proxy.ws(req, socket, head, { target: spec });
+          proxy.ws(req, socket, head, { target: spec }, function wsErrorHandler (err, req, socket) {
+            onReqError(err, req, null, req._sReq, req._spec);
+            socket.destroy();
+          });
         });
       });
-    });
-
-    proxy.on('error', function (err, req, res) {
-      onReqError(err, req, res, req._sReq, req._spec);
     });
 
     return server;
