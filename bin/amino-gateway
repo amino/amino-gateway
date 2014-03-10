@@ -38,6 +38,10 @@ if (cluster.isMaster) {
     cluster.fork();
   }
 
+  cluster.on('disconnect', function (worker) {
+    console.error('worker ' + worker.process.pid + ' disconnected. killing...');
+    worker.kill();
+  });
   cluster.on('exit', function (worker, code, signal) {
     var exitCode = worker.process.exitCode;
     console.error('worker ' + worker.process.pid + ' died (' + exitCode + '). restarting...');
