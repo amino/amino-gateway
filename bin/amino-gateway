@@ -54,6 +54,14 @@ if (cluster.isMaster) {
     console.error('Maintenance mode', program.maintMode ? 'on' : 'off');
   });
 
+  cluster.once('fork', function (worker) {
+    worker.once('message', function (msg) {
+      if (msg === 'maintMode') {
+        worker.send('maintMode:' + (program.maintMode ? 'on' : 'off'));
+      }
+    });
+  });
+
   if (program.maintMode) {
     console.error('Maintenance mode on');
   }
@@ -63,18 +71,33 @@ else {
     program.maintMode = !program.maintMode;
   });
 
+  // Get the current maintenance mode from cluster master before start
+  process.send('maintMode');
+  process.once('message', function (msg) {
+    var parts = msg.split(':');
+    if (parts[0] === 'maintMode') {
+      if ((parts[1] === 'on' && !program.maintMode) || (parts[1] === 'off' && program.maintMode)) {
+        program.maintMode = !program.maintMode;
+      }
+    }
+    startGateway();
+  });
+
   process.title = 'amino-gateway (worker)';
-  var server = amino.createGateway(program);
-  server.on('error', function (err) {
-    console.error(err, 'server error');
-  });
-  server.on('listening', function () {
-    if (program.setgid) {
-      process.setgid(program.setgid);
-    }
-    if (program.setuid) {
-      process.setuid(program.setuid);
-    }
-  });
-  server.listen(program.port);
+
+  function startGateway () {
+    var server = amino.createGateway(program);
+    server.on('error', function (err) {
+      console.error(err, 'server error');
+    });
+    server.on('listening', function () {
+      if (program.setgid) {
+        process.setgid(program.setgid);
+      }
+      if (program.setuid) {
+        process.setuid(program.setuid);
+      }
+    });
+    server.listen(program.port);
+  }
 }
