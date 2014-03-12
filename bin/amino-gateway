@@ -58,7 +58,7 @@ if (cluster.isMaster) {
     console.error('Maintenance mode', program.maintMode ? 'on' : 'off');
   });
 
-  cluster.once('fork', function (worker) {
+  cluster.on('fork', function (worker) {
     function sendMaintMode (msg) {
       if (msg === 'maintMode') {
         worker.send('maintMode:' + (program.maintMode ? 'on' : 'off'));
