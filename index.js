@@ -1,6 +1,8 @@
 var cookie = require('cookie')
   , parseUrl = require('url').parse
+  , fs = require('fs')
   , http = require('http')
+  , https = require('https')
   , httpProxy = require('http-proxy')
   , addr = require('addr')
   , cluster = require('cluster')
@@ -88,7 +90,7 @@ exports.attach = function (options) {
 
     var proxy = httpProxy.createProxyServer();
 
-    var server = http.createServer(function (req, res) {
+    function doRequest (req, res) {
       if (options.maintMode) {
         var remoteIp = addr(req);
         if (options.maintIps && ~options.maintIps.indexOf(remoteIp)) doProxy();
@@ -110,7 +112,32 @@ exports.attach = function (options) {
           });
         });
       }
-    });
+    }
+    
+    var server;
+    if (options.tls && Array.isArray(options.tls)) {
+      var tls={};
+      for (var i=0; i<options.tls.length; ++i) {
+        var match=options.tls[i].match(/^([^=]+)=(.+)$/);
+        if (match) {
+          if (match[1]=="pfx" || match[1]=="key" || match[1]=="cert" || match[1]=="ca") {
+            match[2]=fs.readFileSync(match[2]);
+          }
+          if (tls[match[1]]) {
+            if (Array.isArray(tls[match[1]])) {
+              tls[match[1]].push(match[2]);
+            } else {
+              tls[match[1]]=[tls[match[1]],match[2]];
+            }
+          } else {
+            tls[match[1]]=match[2];
+          }
+        }
+      }
+      server = https.createServer(tls,doRequest);
+    } else {
+      server = http.createServer(doRequest);
+    }
 
     server.on('upgrade', function (req, socket, head) {
       setupRequest(req, function (spec) {
