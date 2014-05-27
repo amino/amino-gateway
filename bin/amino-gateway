@@ -22,6 +22,7 @@ var program = require('commander')
   .option('--maintMode', 'start in maintenance mode. (alternatively send SIGUSR2 to toggle maintenance mode)')
   .option('--maintPage <path>', 'path to an html file to be served when maintenance mode is enabled')
   .option('--maintIps <ips>', 'comma-separated list of IP addresses able to bypass maintenance mode', list)
+  .option('--tls <options>', 'comma-separated list of tls options. pfx, key, cert and ca are supposed to be file paths', list)
   .parse(process.argv)
 
 var amino = require('amino')
